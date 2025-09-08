@@ -1,0 +1,482 @@
+**
+
+# Wrestling Team Newsletter & Fundraising Platform
+
+## Product Requirements Document (PRD)
+
+---
+
+## 1. Product Overview
+
+### 1.1 Product Vision
+
+A centralized platform for wrestling coaches to create personalized newsletters and manage fundraising communications by leveraging AI-generated content based on competition results.
+
+### 1.2 Problem Statement
+
+Wrestling coaches currently lack an efficient way to:
+
+- Create personalized updates about individual athlete performance
+    
+- Maintain organized communication with parents and supporters
+    
+- Generate consistent, engaging content for fundraising efforts
+    
+- Manage team branding across communications
+    
+
+### 1.3 Target Users
+
+- Primary: High school and middle school wrestling coaches
+    
+- Secondary: Assistant coaches with super user access
+    
+- End Recipients: Parents, family members, and team supporters
+    
+
+---
+
+## 2. Product Goals & Success Metrics
+
+### 2.1 Primary Goals
+
+- Reduce time coaches spend creating newsletters by 80%
+    
+- Increase engagement with team communications
+    
+- Streamline fundraising communication process
+    
+- Create consistent, professional team branding
+    
+
+### 2.2 Success Metrics (Future)
+
+- Newsletter open rates
+    
+- Time saved per newsletter creation
+    
+- User retention rate
+    
+- Expansion to other sports
+    
+
+---
+
+## 3. User Roles & Permissions
+
+### 3.1 System Admin (Company Owner)
+
+- Manage coach invitations and access
+    
+- Enable/disable team accounts
+    
+- Access to admin panel for user management
+    
+
+### 3.2 Primary Coach
+
+- Full access to all team features
+    
+- Team setup and branding configuration
+    
+- Roster management
+    
+- Newsletter creation and sending
+    
+- Grant super user access to assistant coaches
+    
+
+### 3.3 Super User Coach
+
+- Same permissions as primary coach
+    
+- Cannot grant access to other coaches
+    
+- Cannot delete team account
+    
+
+---
+
+## 4. Core Features & Requirements
+
+### 4.1 MVP Features (Must-Have)
+
+#### 4.1.1 Team Brand Setup
+
+- Logo Upload: Cloud storage with file size restrictions for cost optimization
+    
+- Team Colors: Color picker for primary and secondary colors
+    
+- Team Information: Name, school, program description/brand voice
+    
+- Brand Voice Description: Text field for LLM tone guidance
+    
+
+#### 4.1.2 Roster Management
+
+- Athlete Profiles:
+    
+
+- Name (required)
+    
+- Grade (required)
+    
+- Weight Class (required)
+    
+- Profile Photo (optional, cloud stored with compression)
+    
+
+- Email List Management:
+    
+
+- Each athlete can have associated email addresses
+    
+- No minimum emails per athlete
+    
+- Team maximum of 256 total emails
+    
+- Email validation (basic format checking)
+    
+- Ability to add/remove emails per athlete
+    
+
+#### 4.1.3 Competition Data Processing
+
+- PDF Upload Interface: Drag-and-drop or file selector
+    
+- PDF Parsing: Automated extraction of wrestling statistics from standardized competition PDFs
+    
+- Data Validation: Review parsed data before LLM processing
+    
+- Supported Stats: Wins, losses, pins, takedowns, placement focus
+    
+
+#### 4.1.4 AI Content Generation
+
+- Individual Athlete Messages: LLM generates personalized messages based on:
+    
+
+- Individual performance data
+    
+- Team brand voice
+    
+- Encouraging tone (minimize focus on losses)
+    
+
+- Team Summary Message: Overall team performance summary
+    
+- Content Editing: Coaches can edit all LLM-generated content before sending
+    
+- Message History: Store general team messages for 1 year
+    
+
+#### 4.1.5 Email Newsletter System
+
+- Email Templates: Multiple template options with team branding
+    
+- Newsletter Composition:
+    
+
+- Team logo and name header
+    
+- Individual athlete sections (photo + performance message)
+    
+- General team message
+    
+- Donation link (placeholder for now)
+    
+- Team store link (coach-provided URL)
+    
+
+- Email Scheduling: Ability to schedule newsletters for future sending
+    
+- Bulk Email Sending: Send to all email addresses in team list
+    
+
+#### 4.1.6 Custom Communication
+
+- Ad-hoc Emails: Coaches can send custom emails to team mailing list
+    
+- Simple Text Editor: Basic formatting options for custom messages
+    
+
+### 4.2 Admin Features
+
+- User Management Panel: Enable/disable coach access
+    
+- Team Overview: View all active teams (for support purposes)
+    
+- Invitation System: Generate and send coach invitations
+    
+
+---
+
+## 5. Technical Requirements
+
+### 5.1 Technology Stack
+
+- Frontend: React/Next.js for web browser compatibility
+    
+- Backend: Node.js with Express or Next.js API routes
+    
+- Database: PostgreSQL or similar relational database
+    
+- File Storage: Cloud storage (AWS S3 or similar) with compression
+    
+- Email Service: Cost-effective email service (AWS SES, Sendgrid, etc.)
+    
+- LLM Integration:
+    
+
+- Initially: Local homelab deployment for proof of concept
+    
+- Production: Most cost-effective API (OpenAI, Anthropic, or alternatives)
+    
+
+### 5.2 Performance Requirements
+
+- Load Time: Pages load within 3 seconds
+    
+- File Upload: Support PDF files up to 10MB
+    
+- Image Optimization: Automatic compression for athlete photos
+    
+- Email Delivery: Process and send newsletters within 5 minutes of scheduling
+    
+
+### 5.3 Security Requirements
+
+- Authentication: Secure login system for coaches
+    
+- Data Protection: Encrypt sensitive data at rest
+    
+- File Upload Security: Validate and sanitize uploaded files
+    
+- Access Control: Role-based permissions system
+    
+
+### 5.4 Scalability Considerations
+
+- Database: Design for future multi-sport expansion
+    
+- File Storage: Scalable cloud storage solution
+    
+- Email Limits: Monitor and manage email sending limits
+    
+- Cost Optimization: Monitor LLM API usage and optimize prompts
+    
+
+---
+
+## 6. User Experience Requirements
+
+### 6.1 Platform Support
+
+- Primary: Web browser (desktop focus)
+    
+- Responsive Design: Basic mobile compatibility for emergency access
+    
+- Browser Support: Modern browsers (Chrome, Firefox, Safari, Edge)
+    
+
+### 6.2 Usability Requirements
+
+- Intuitive Navigation: Clear menu structure and workflow
+    
+- Minimal Learning Curve: Coaches should be productive within first session
+    
+- Error Handling: Clear error messages and recovery options
+    
+- Help Documentation: Basic help text and tooltips
+    
+
+---
+
+## 7. Data Management
+
+### 7.1 Data Storage
+
+- Team Data: Permanent storage with backup
+    
+- Athlete Data: Permanent storage with FERPA considerations
+    
+- Email Lists: Secure storage with opt-out capabilities
+    
+- Competition Data: Store parsed results for message generation
+    
+- Message History: 1-year retention for general team messages
+    
+- File Storage: Cloud storage with cost optimization
+    
+
+### 7.2 Data Privacy
+
+- Email Management: Allow email removal/opt-out
+    
+- Data Retention: Clear policies for data lifecycle
+    
+- Student Privacy: Comply with educational privacy requirements
+    
+
+---
+
+## 8. Integration Requirements
+
+### 8.1 Current Integrations
+
+- LLM Service: API integration for content generation
+    
+- Email Service: Bulk email sending capability
+    
+- Cloud Storage: File upload and management
+    
+- Payment Processing: Placeholder for future donation integration
+    
+
+### 8.2 Future Integration Considerations
+
+- Payment Processors: Stripe, PayPal, etc. for donations
+    
+- Team Store Platforms: Various e-commerce platforms
+    
+- School Systems: Potential student information system integration
+    
+
+---
+
+## 9. Business Model & Constraints
+
+### 9.1 Pricing Strategy
+
+- Beta Phase: Free access for all invited coaches
+    
+- Post-Beta: Flat fee per season per team
+    
+- Cost Management: Monitor API usage and optimize for profitability
+    
+
+### 9.2 Development Constraints
+
+- Budget: Minimize ongoing operational costs
+    
+- Timeline: Focus on MVP functionality first
+    
+- Scope: Wrestling-only until proven successful
+    
+- Maintenance: Choose technologies that are easy to maintain
+    
+
+---
+
+## 10. Success Criteria & Launch Plan
+
+### 10.1 MVP Success Criteria
+
+- 10 wrestling teams successfully using the platform
+    
+- 90% of newsletters sent successfully
+    
+- Positive coach feedback on time savings
+    
+- System reliability >99% uptime
+    
+
+### 10.2 Launch Strategy
+
+- Phase 1: Invite 3-5 pilot wrestling coaches
+    
+- Phase 2: Refine based on feedback, expand to 15-20 teams
+    
+- Phase 3: Implement pricing model and scale
+    
+- Phase 4: Evaluate expansion to other sports
+    
+
+---
+
+## 11. Risk Assessment
+
+### 11.1 Technical Risks
+
+- LLM Costs: Monitor and optimize API usage
+    
+- Email Deliverability: Ensure high delivery rates
+    
+- PDF Parsing: Handle variations in competition report formats
+    
+- Scale Issues: Database and storage optimization
+    
+
+### 11.2 Business Risks
+
+- User Adoption: Coaches may resist new technology
+    
+- Competition: Existing solutions may emerge
+    
+- Seasonal Usage: Wrestling season limitations
+    
+- Privacy Concerns: Handling student and parent data
+    
+
+---
+
+## 12. Future Roadmap
+
+### 12.1 Phase 2 Features
+
+- Email Analytics: Open rates and click tracking
+    
+- Advanced Templates: More design options
+    
+- Mobile App: Dedicated mobile application
+    
+- Athletic Director Dashboard: School-wide management
+    
+
+### 12.2 Phase 3 Features
+
+- Multi-Sport Support: Expand beyond wrestling
+    
+- Payment Integration: Direct donation processing
+    
+- Team Store Integration: Embedded store functionality
+    
+- Advanced AI Features: More sophisticated content generation
+    
+
+---
+
+## 13. Technical Architecture Notes
+
+### 13.1 Development Priorities
+
+1. Core team and roster management
+    
+2. PDF upload and parsing system
+    
+3. LLM integration and message generation
+    
+4. Email template system and sending
+    
+5. Admin panel and user management
+    
+6. Scheduling and automation features
+    
+
+### 13.2 API Design Considerations
+
+- RESTful API design for future mobile app
+    
+- Webhook support for email status updates
+    
+- Rate limiting for LLM API calls
+    
+- Async processing for email sending
+    
+
+---
+
+This PRD serves as the foundation for development and can be iteratively updated based on user feedback and technical discoveries during implementation.
+
+  
+**
