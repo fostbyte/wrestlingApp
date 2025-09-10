@@ -10,11 +10,13 @@ export function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Attempting to log in with email:", email);
     try {
       await login(email, password);
+      console.log("Login successful");
       setLocation("/dashboard");
     } catch (error) {
-      console.error("Failed to login", error);
+      console.error("Failed to login:", error);
     }
   };
 

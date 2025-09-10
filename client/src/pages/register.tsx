@@ -9,14 +9,14 @@ export function RegisterPage() {
   const [, setLocation] = useLocation();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await register(email, password);
-      setLocation("/dashboard");
-    } catch (error) {
-      console.error("Failed to register", error);
-    }
-  };
+  e.preventDefault();
+  try {
+    await register( email, password ); // Pass as a single object
+    setLocation("/dashboard");
+  } catch (error) {
+    console.error("Failed to register", error);
+  }
+};
 
   return (
     <div className="flex items-center justify-center h-screen">
