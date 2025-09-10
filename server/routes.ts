@@ -4,11 +4,12 @@ import { createServer, type Server } from "http";
 import multer from "multer";
 import path from "path";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertTeamSchema, insertAthleteSchema, insertAthleteEmailSchema, insertCompetitionSchema } from "@shared/schema";
+import passport, { isAuthenticated } from "./auth";
+import { insertTeamSchema, insertAthleteSchema, insertAthleteEmailSchema, insertCompetitionSchema, insertUserSchema } from "@shared/schema";
 import { generateAthleteMessage, generateTeamMessage } from "./services/openai";
 import { sendNewsletter } from "./services/emailService";
 import { parsePDF } from "./services/pdfParser";
+import session from "express-session";
 
 // Configure multer for file uploads
 const upload = multer({
@@ -40,25 +41,50 @@ const uploadImage = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET || "secret",
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  app.post("/api/register", async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
+      const validatedData = insertUserSchema.parse(req.body);
+      const user = await storage.createUser(validatedData);
+      req.login(user, (err) => {
+        if (err) {
+          return res.status(500).json({ message: "Failed to login" });
+        }
+        res.json(user);
+      });
     } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
+      console.error("Error creating user:", error);
+      res.status(400).json({ message: "Failed to create user", error: error instanceof Error ? error.message : String(error) });
     }
+  });
+
+  app.post("/api/login", passport.authenticate("local"), (req, res) => {
+    res.json(req.user);
+  });
+
+  app.get("/api/logout", (req, res) => {
+    req.logout((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Failed to logout" });
+      }
+      res.json({ message: "Logged out" });
+    });
   });
 
   // Team routes
   app.post('/api/teams', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = (req.user as any).id;
       const validatedData = insertTeamSchema.parse({ 
         ...req.body, 
         primaryCoachId: userId 
@@ -74,7 +100,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/teams', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = (req.user as any).id;
       const teams = await storage.getTeamsByCoach(userId);
       res.json(teams);
     } catch (error) {
@@ -320,7 +346,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Newsletter routes
   app.post('/api/teams/:teamId/newsletters', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = (req.user as any).id;
       const validatedData = {
         ...req.body,
         teamId: req.params.teamId,

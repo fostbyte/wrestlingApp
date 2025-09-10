@@ -15,7 +15,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Session storage table.
-// (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
+
 export const sessions = pgTable(
   "sessions",
   {
@@ -27,7 +27,7 @@ export const sessions = pgTable(
 );
 
 // User storage table.
-// (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
+
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: varchar("email").unique(),
@@ -250,8 +250,16 @@ export const insertNewsletterSchema = createInsertSchema(newsletters).omit({
 });
 
 // Types
+export const insertUserSchema = createInsertSchema(users, {
+  email: z.string().email(),
+  password: z.string().min(8),
+}).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
 export type UpsertUser = typeof users.$inferInsert;
-export type User = typeof users.$inferSelect;
+export type User = Omit<typeof users.$inferSelect, "password">;
 export type Team = typeof teams.$inferSelect;
 export type InsertTeam = z.infer<typeof insertTeamSchema>;
 export type Athlete = typeof athletes.$inferSelect;
