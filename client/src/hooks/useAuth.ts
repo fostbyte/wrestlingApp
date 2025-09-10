@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 async function fetchUser() {
-  const res = await fetch("/api/auth/user");
+  const res = await fetch("/api/auth/user", {credentials: "include"});
   if (!res.ok) {
     if (res.status === 401) {
       return null;
@@ -25,6 +25,7 @@ export function useAuth() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
       if (!res.ok) {
         throw new Error("Failed to login");
@@ -42,6 +43,7 @@ export function useAuth() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include" 
       });
       if (!res.ok) {
         throw new Error("Failed to register");
@@ -55,7 +57,7 @@ export function useAuth() {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch("/api/logout");
+      const res = await fetch("/api/logout", { credentials: "include" });
       if (!res.ok) {
         throw new Error("Failed to logout");
       }
