@@ -252,7 +252,7 @@ export const insertNewsletterSchema = createInsertSchema(newsletters).omit({
 // Types
 export const insertUserSchema = createInsertSchema(users, {
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string().min(1),
 }).omit({
   id: true,
   createdAt: true,

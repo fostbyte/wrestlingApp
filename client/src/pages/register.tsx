@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 
 export function RegisterPage() {
   const [email, setEmail] = useState("");
